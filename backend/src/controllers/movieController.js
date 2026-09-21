@@ -11,12 +11,12 @@ function getMovies(req, res) {
 
     if (search && search.trim() !== '') {
       const term = `%${search.trim()}%`;
-      whereClauses.push(`(title LIKE ? OR director LIKE ? OR cast LIKE ? OR description LIKE ?)`);
+      whereClauses.push(`(m.title LIKE ? OR m.director LIKE ? OR m."cast" LIKE ? OR m.description LIKE ?)`);
       params.push(term, term, term, term);
     }
 
     if (genre && genre.trim() !== '' && genre.toLowerCase() !== 'all') {
-      whereClauses.push(`genres LIKE ?`);
+      whereClauses.push(`m.genres LIKE ?`);
       params.push(`%${genre.trim()}%`);
     }
 
@@ -36,7 +36,7 @@ function getMovies(req, res) {
     }
 
     // Count total
-    const countRow = db.prepare(`SELECT COUNT(*) as total FROM movies ${whereSql}`).get(...params);
+    const countRow = db.prepare(`SELECT COUNT(*) as total FROM movies m ${whereSql}`).get(...params);
     const total = countRow ? countRow.total : 0;
 
     const offset = (Math.max(1, parseInt(page)) - 1) * parseInt(limit);
