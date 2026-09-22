@@ -56,7 +56,7 @@ export default function RegisterPage() {
               <Film className="w-6 h-6 text-white" />
             </div>
             <h2 className="text-2xl font-extrabold font-display text-white">
-              Join CineVerse
+              Join FilmPulse
             </h2>
             <p className="text-sm text-slate-400 mt-1">
               Start cataloging films, submitting critiques, and engaging with cinephiles.
@@ -132,7 +132,7 @@ export default function RegisterPage() {
                   <Loader2 className="w-4 h-4 animate-spin" /> Creating Account...
                 </>
               ) : (
-                'Create Your CineVerse Account'
+                'Create Your FilmPulse Account'
               )}
             </button>
           </form>

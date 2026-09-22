@@ -76,7 +76,7 @@ export default function Footer() {
               <Film className="w-4 h-4 text-white" />
             </div>
             <span className="text-lg font-bold font-display text-white">
-              Cine<span className="text-amber-400">Verse</span>
+              Film<span className="text-amber-400">Pulse</span>
             </span>
             <span className="text-xs text-slate-500 ml-2">
               Discover, rate, and discuss great cinema.

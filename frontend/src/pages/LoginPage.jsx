@@ -128,7 +128,7 @@ export default function LoginPage() {
                   <Loader2 className="w-4 h-4 animate-spin" /> Signing In...
                 </>
               ) : (
-                'Sign In to CineVerse'
+                'Sign In to FilmPulse'
               )}
             </button>
           </form>

@@ -32,7 +32,7 @@ export default function Navbar({ onOpenAddMovie }) {
               <Film className="w-5 h-5 text-white" />
             </div>
             <span className="text-2xl font-black tracking-tight font-display bg-gradient-to-r from-white via-slate-200 to-amber-400 bg-clip-text text-transparent">
-              Cine<span className="text-amber-400">Verse</span>
+              Film<span className="text-amber-400">Pulse</span>
             </span>
           </Link>
 

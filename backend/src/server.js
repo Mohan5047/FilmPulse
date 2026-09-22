@@ -40,7 +40,7 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
-    service: 'CineVerse API'
+    service: 'FilmPulse API'
   });
 });
 
@@ -107,7 +107,7 @@ async function startServer() {
   }
 
   app.listen(PORT, () => {
-    console.log(`🎬 CineVerse API Server running on port ${PORT}`);
+    console.log(`🎬 FilmPulse API Server running on port ${PORT}`);
     console.log(`   Health check: http://localhost:${PORT}/api/health`);
   });
 }

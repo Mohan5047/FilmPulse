@@ -401,7 +401,7 @@ export default function MovieDetailPage() {
                   <Sparkles className="w-6 h-6 mx-auto text-amber-400 mb-1.5" />
                   <p className="text-sm font-semibold text-white">Have you seen this film?</p>
                   <p className="text-xs text-slate-400 mt-0.5 mb-3">
-                    Your critique helps the CineVerse community discover great cinema.
+                    Your critique helps the FilmPulse community discover great cinema.
                   </p>
                   <button
                     onClick={() => {

@@ -56,7 +56,7 @@ export default function ReviewForm({ movieId, existingReview, onSuccess, onCance
         {existingReview ? 'Update Your Review' : 'Write Your Review'}
       </h3>
       <p className="text-sm text-slate-400 mb-6">
-        Share your rating, thoughts, and critique with the CineVerse movie community.
+        Share your rating, thoughts, and critique with the FilmPulse movie community.
       </p>
 
       {error && (

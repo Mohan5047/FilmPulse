@@ -1,7 +1,7 @@
-# 🎬 CineVerse — Modern Full-Stack Movie Review & Rating Application
+# 🎬 FilmPulse — Modern Full-Stack Movie Review & Rating Application
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-CineVerse%20App-f59e0b?style=for-the-badge&logo=googlechrome&logoColor=white)](https://sarathi092007cse2427-stack.github.io/movie-review-system/)
-[![GitHub Actions CI/CD](https://img.shields.io/badge/Deploy-GitHub%20Pages-22c55e?style=for-the-badge&logo=githubactions&logoColor=white)](https://sarathi092007cse2427-stack.github.io/movie-review-system/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-FilmPulse%20App-f59e0b?style=for-the-badge&logo=googlechrome&logoColor=white)](https://mohan5047.github.io/FilmPulse/)
+[![GitHub Actions CI/CD](https://img.shields.io/badge/Deploy-GitHub%20Pages-22c55e?style=for-the-badge&logo=githubactions&logoColor=white)](https://mohan5047.github.io/FilmPulse/)
 [![React](https://img.shields.io/badge/React-18-61dafb?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![Vite](https://img.shields.io/badge/Vite-5-646cff?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3-38bdf8?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
@@ -9,7 +9,7 @@
 [![SQLite](https://img.shields.io/badge/SQLite-sql.js-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://sqlite.org)
 
 > **🚀 DIRECT LIVE APPLICATION LINK:**
-> ### 👉 **[https://sarathi092007cse2427-stack.github.io/movie-review-system/](https://sarathi092007cse2427-stack.github.io/movie-review-system/)**
+> ### 👉 **[https://mohan5047.github.io/FilmPulse/](https://mohan5047.github.io/FilmPulse/)**
 
 ---
 
@@ -29,7 +29,7 @@
 
 - **Frontend:** React 18, Vite, React Router (`HashRouter`), Tailwind CSS, Lucide Icons, Axios.
 - **Backend:** Node.js, Express, SQL.js (SQLite), JWT (`jsonwebtoken`), bcryptjs, CORS.
-- **Deployment:** GitHub Pages (automated CI/CD via GitHub Actions) & Render/Vercel unified support.
+- **Deployment:** GitHub Pages (automated CI/CD via GitHub Actions) & Render/Railway/Vercel unified support.
 
 ---
 
@@ -37,8 +37,8 @@
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/sarathi092007cse2427-stack/movie-review-system.git
-cd movie-review-system
+git clone https://github.com/Mohan5047/FilmPulse.git
+cd FilmPulse
 ```
 
 ### 2. Install dependencies
@@ -58,19 +58,17 @@ npm run dev
 
 ## 🌐 Deploying to GitHub Pages (Direct App Link)
 
-To have your repository automatically build and open the direct web app rather than rendering `README.md`:
+To have your repository automatically build and open the direct web app:
 
-1. Go to your repository on GitHub: `https://github.com/sarathi092007cse2427-stack/movie-review-system`
+1. Go to your repository on GitHub: `https://github.com/Mohan5047/FilmPulse`
 2. Click **Settings** (top tab) ➔ **Pages** (left sidebar).
-3. Under **Build and deployment** ➔ **Source**, select **GitHub Actions** (instead of *Deploy from a branch*).
-4. Commit and push any changes to `main`:
+3. Under **Build and deployment** ➔ **Source**, select **GitHub Actions**.
+4. Push to `main`:
    ```bash
-   git add .
-   git commit -m "Configure GitHub Pages automated deployment"
    git push origin main
    ```
 5. GitHub Actions will automatically run the `.github/workflows/deploy.yml` workflow, build the Vite app, and publish it to:
-   **[https://sarathi092007cse2427-stack.github.io/movie-review-system/](https://sarathi092007cse2427-stack.github.io/movie-review-system/)**
+   **[https://mohan5047.github.io/FilmPulse/](https://mohan5047.github.io/FilmPulse/)**
 
 ---
 
@@ -90,4 +88,4 @@ Because the project includes an Express backend and SQLite database:
 ---
 
 ## 📄 License
-MIT License © 2026 CineVerse
+MIT License © 2026 FilmPulse

@@ -1,7 +1,7 @@
 {
-  "name": "cineverse-backend",
+  "name": "filmpulse-backend",
   "version": "1.0.0",
-  "description": "REST API backend for CineVerse Movie Review & Rating App",
+  "description": "REST API backend for FilmPulse Movie Review & Rating App",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
