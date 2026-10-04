@@ -193,6 +193,67 @@ export const moviesAPI = {
       };
     }
   },
+  getPrevious: async (params = {}) => {
+    try {
+      return await api.get('/movies/previous', { params });
+    } catch (err) {
+      let list = [...getLocalMovies()].filter(m => m.release_year < 2020);
+      const watchlist = getLocalWatchlist();
+      list = list.map(m => ({ ...m, is_in_watchlist: watchlist.includes(m.id) }));
+
+      if (params.era && params.era !== 'all') {
+        if (params.era === '2010s') list = list.filter(m => m.release_year >= 2010 && m.release_year <= 2019);
+        else if (params.era === '2000s') list = list.filter(m => m.release_year >= 2000 && m.release_year <= 2009);
+        else if (params.era === '90s') list = list.filter(m => m.release_year >= 1990 && m.release_year <= 1999);
+        else if (params.era === 'vintage' || params.era === 'classic') list = list.filter(m => m.release_year < 1990);
+      }
+
+      if (params.search) {
+        const q = params.search.toLowerCase();
+        list = list.filter(m =>
+          m.title.toLowerCase().includes(q) ||
+          m.director.toLowerCase().includes(q) ||
+          (Array.isArray(m.cast) ? m.cast.join(' ') : m.cast).toLowerCase().includes(q)
+        );
+      }
+
+      if (params.genre && params.genre !== 'All') {
+        list = list.filter(m =>
+          Array.isArray(m.genres)
+            ? m.genres.some(g => g.toLowerCase() === params.genre.toLowerCase())
+            : m.genres.toLowerCase().includes(params.genre.toLowerCase())
+        );
+      }
+
+      if (params.sort === 'highest_rated') {
+        list.sort((a, b) => b.avg_rating - a.avg_rating);
+      } else if (params.sort === 'oldest') {
+        list.sort((a, b) => a.release_year - b.release_year);
+      } else if (params.sort === 'newest') {
+        list.sort((a, b) => b.release_year - a.release_year);
+      }
+
+      return {
+        data: {
+          success: true,
+          data: list,
+          eraStats: {
+            all: getLocalMovies().filter(m => m.release_year < 2020).length,
+            '2010s': getLocalMovies().filter(m => m.release_year >= 2010 && m.release_year <= 2019).length,
+            '2000s': getLocalMovies().filter(m => m.release_year >= 2000 && m.release_year <= 2009).length,
+            '90s': getLocalMovies().filter(m => m.release_year >= 1990 && m.release_year <= 1999).length,
+            vintage: getLocalMovies().filter(m => m.release_year < 1990).length
+          },
+          pagination: {
+            page: 1,
+            limit: list.length,
+            total: list.length,
+            totalPages: 1
+          }
+        }
+      };
+    }
+  },
   getById: async (id) => {
     try {
       return await api.get(`/movies/${id}`);

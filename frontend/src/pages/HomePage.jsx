@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { Search, Filter, SlidersHorizontal, Loader2, RefreshCw } from 'lucide-react';
+import { useSearchParams, Link } from 'react-router-dom';
+import { Search, Filter, SlidersHorizontal, Loader2, RefreshCw, History, Sparkles, ArrowRight, Film } from 'lucide-react';
 import HeroBanner from '../components/HeroBanner';
 import MovieCard from '../components/MovieCard';
 import { moviesAPI } from '../services/api';
@@ -9,11 +9,14 @@ export default function HomePage({ onOpenAddMovie }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const searchFromUrl = searchParams.get('search') || '';
   const sortFromUrl = searchParams.get('sort') || 'highest_rated';
+  const eraFromUrl = searchParams.get('era') || 'all';
 
   const [movies, setMovies] = useState([]);
+  const [previousMoviesSpotlight, setPreviousMoviesSpotlight] = useState([]);
   const [featuredMovie, setFeaturedMovie] = useState(null);
   const [genres, setGenres] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState('All');
+  const [selectedEra, setSelectedEra] = useState(eraFromUrl);
   const [searchQuery, setSearchQuery] = useState(searchFromUrl);
   const [sortBy, setSortBy] = useState(sortFromUrl);
   const [loading, setLoading] = useState(true);
@@ -21,27 +24,28 @@ export default function HomePage({ onOpenAddMovie }) {
 
   // Sync with searchParams
   useEffect(() => {
-    if (searchFromUrl !== searchQuery) {
-      setSearchQuery(searchFromUrl);
-    }
-    if (sortFromUrl !== sortBy) {
-      setSortBy(sortFromUrl);
-    }
-  }, [searchFromUrl, sortFromUrl]);
+    if (searchFromUrl !== searchQuery) setSearchQuery(searchFromUrl);
+    if (sortFromUrl !== sortBy) setSortBy(sortFromUrl);
+    if (eraFromUrl !== selectedEra) setSelectedEra(eraFromUrl);
+  }, [searchFromUrl, sortFromUrl, eraFromUrl]);
 
-  // Load genres and featured movie on initial mount
+  // Load genres, featured movie, and previous movies spotlight
   useEffect(() => {
     async function loadMeta() {
       try {
-        const [featRes, genRes] = await Promise.all([
+        const [featRes, genRes, prevRes] = await Promise.all([
           moviesAPI.getFeatured(),
-          moviesAPI.getGenres()
+          moviesAPI.getGenres(),
+          moviesAPI.getPrevious({ limit: 4, sort: 'highest_rated' })
         ]);
         if (featRes.data.success) {
           setFeaturedMovie(featRes.data.data);
         }
         if (genRes.data.success) {
           setGenres([{ name: 'All', count: 0 }, ...genRes.data.data]);
+        }
+        if (prevRes.data.success) {
+          setPreviousMoviesSpotlight(prevRes.data.data.slice(0, 4));
         }
       } catch (err) {
         console.error('Failed to load initial metadata:', err);
@@ -59,7 +63,8 @@ export default function HomePage({ onOpenAddMovie }) {
         limit: 12,
         sort: sortBy,
         genre: selectedGenre !== 'All' ? selectedGenre : undefined,
-        search: searchQuery.trim() || undefined
+        search: searchQuery.trim() || undefined,
+        era: selectedEra !== 'all' ? selectedEra : undefined
       };
 
       const res = await moviesAPI.getAll(params);
@@ -76,7 +81,7 @@ export default function HomePage({ onOpenAddMovie }) {
 
   useEffect(() => {
     fetchMovies(1);
-  }, [selectedGenre, sortBy, searchQuery]);
+  }, [selectedGenre, sortBy, searchQuery, selectedEra]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -102,8 +107,21 @@ export default function HomePage({ onOpenAddMovie }) {
     });
   };
 
+  const handleEraChange = (era) => {
+    setSelectedEra(era);
+    setSearchParams(prev => {
+      if (era !== 'all') {
+        prev.set('era', era);
+      } else {
+        prev.delete('era');
+      }
+      return prev;
+    });
+  };
+
   const handleClearFilters = () => {
     setSelectedGenre('All');
+    setSelectedEra('all');
     setSearchQuery('');
     setSortBy('highest_rated');
     setSearchParams({});
@@ -112,12 +130,89 @@ export default function HomePage({ onOpenAddMovie }) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       {/* Featured Film Hero - Only shown when not searching */}
-      {!searchQuery && selectedGenre === 'All' && featuredMovie && (
+      {!searchQuery && selectedGenre === 'All' && selectedEra === 'all' && featuredMovie && (
         <HeroBanner movie={featuredMovie} />
+      )}
+
+      {/* DEDICATED SEPARATE SECTION: Previous Movies Spotlight */}
+      {!searchQuery && selectedGenre === 'All' && selectedEra === 'all' && previousMoviesSpotlight.length > 0 && (
+        <section className="mb-14 p-6 sm:p-8 rounded-3xl glass-panel border border-amber-500/20 bg-gradient-to-r from-amber-950/20 via-slate-900/60 to-slate-900/90 shadow-2xl relative overflow-hidden">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-bold uppercase tracking-wider mb-2">
+                <History className="w-3.5 h-3.5" /> Classic Cinema Vault
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black font-display text-white">
+                🎞️ Previous & Classic Movies
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-300 mt-1">
+                Timeless masterpieces from previous eras (90s, 2000s, 2010s & Vintage).
+              </p>
+            </div>
+
+            <Link
+              to="/previous-movies"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs sm:text-sm shadow-lg shadow-amber-500/20 transition transform active:scale-95"
+            >
+              <span>Explore All Previous Movies</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          {/* Previous Movies Grid List */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
+            {previousMoviesSpotlight.map((movie) => (
+              <MovieCard key={movie.id} movie={movie} />
+            ))}
+          </div>
+        </section>
       )}
 
       {/* Filter and Search Bar Section */}
       <div className="mb-8 space-y-4">
+        {/* ERA FILTER TOGGLE BAR (All vs Previous vs Recent) */}
+        <div className="flex flex-wrap items-center gap-2 pb-2">
+          <button
+            onClick={() => handleEraChange('all')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+              selectedEra === 'all'
+                ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20'
+                : 'bg-slate-900 text-slate-300 border border-slate-800 hover:text-white hover:border-slate-700'
+            }`}
+          >
+            <Film className="w-3.5 h-3.5" /> All Movies
+          </button>
+
+          <button
+            onClick={() => handleEraChange('previous')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+              selectedEra === 'previous'
+                ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20'
+                : 'bg-slate-900 text-slate-300 border border-slate-800 hover:text-white hover:border-slate-700'
+            }`}
+          >
+            <History className="w-3.5 h-3.5 text-amber-400" /> 📼 Previous Movies (Classics)
+          </button>
+
+          <button
+            onClick={() => handleEraChange('recent')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+              selectedEra === 'recent'
+                ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20'
+                : 'bg-slate-900 text-slate-300 border border-slate-800 hover:text-white hover:border-slate-700'
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" /> 🔥 Recent Releases (2020+)
+          </button>
+
+          <Link
+            to="/previous-movies"
+            className="ml-auto text-xs font-semibold text-amber-400 hover:text-amber-300 transition flex items-center gap-1 hidden sm:flex"
+          >
+            <span>Open Dedicated Classics Vault</span> &rarr;
+          </Link>
+        </div>
+
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
           {/* Search form */}
           <form onSubmit={handleSearchSubmit} className="relative flex-1 max-w-lg">
@@ -193,6 +288,10 @@ export default function HomePage({ onOpenAddMovie }) {
           <h2 className="text-xl sm:text-2xl font-bold font-display text-white">
             {searchQuery
               ? `Search results for "${searchQuery}"`
+              : selectedEra === 'previous'
+              ? '📼 Previous Movies & Classics'
+              : selectedEra === 'recent'
+              ? '🔥 Recent Releases (2020+)'
               : selectedGenre !== 'All'
               ? `${selectedGenre} Movies`
               : 'Browse Catalog'}
@@ -202,7 +301,7 @@ export default function HomePage({ onOpenAddMovie }) {
           </p>
         </div>
 
-        {(searchQuery || selectedGenre !== 'All') && (
+        {(searchQuery || selectedGenre !== 'All' || selectedEra !== 'all') && (
           <button
             onClick={handleClearFilters}
             className="text-xs text-amber-400 hover:text-amber-300 font-semibold flex items-center gap-1"

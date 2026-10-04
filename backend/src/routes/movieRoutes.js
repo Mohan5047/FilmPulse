@@ -7,6 +7,7 @@ const { authenticate, optionalAuth } = require('../middleware/auth');
 router.get('/', optionalAuth, movieController.getMovies);
 router.get('/featured', optionalAuth, movieController.getFeaturedMovie);
 router.get('/genres', movieController.getGenres);
+router.get('/previous', optionalAuth, movieController.getPreviousMovies);
 router.get('/:id', optionalAuth, movieController.getMovieById);
 router.post('/', authenticate, movieController.createMovie);
 

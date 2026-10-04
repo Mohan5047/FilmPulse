@@ -16,6 +16,7 @@
 ## ✨ Features
 
 - **🎥 Rich Movie Discovery:** Browse popular and curated movies with HD backdrops, posters, trailer embeds, cast, genres, and synopsis.
+- **🎞️ Dedicated Previous Movies List & Vault:** Separate showcase and dedicated `/previous-movies` page for timeless classics, categorized by era (90s Revolution, 2000s Hits, 2010s Masterpieces, Vintage Classics).
 - **⭐ Interactive Reviews & Ratings:** Read and submit reviews with 5-star ratings, spoiler tags, and review upvoting.
 - **🔍 Fast Search & Filter:** Filter dynamically by genre (Sci-Fi, Action, Drama, etc.) and search by title, director, or cast.
 - **🔖 Personal Watchlist:** Add movies to your private watchlist with 1-click bookmarks.

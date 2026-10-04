@@ -3,7 +3,7 @@ const { db } = require('../config/db');
 // GET /api/movies
 function getMovies(req, res) {
   try {
-    const { search, genre, sort = 'highest_rated', page = 1, limit = 12 } = req.query;
+    const { search, genre, sort = 'highest_rated', page = 1, limit = 12, era } = req.query;
     const userId = req.user ? req.user.id : null;
 
     let whereClauses = [];
@@ -18,6 +18,20 @@ function getMovies(req, res) {
     if (genre && genre.trim() !== '' && genre.toLowerCase() !== 'all') {
       whereClauses.push(`m.genres LIKE ?`);
       params.push(`%${genre.trim()}%`);
+    }
+
+    if (era === 'previous') {
+      whereClauses.push(`m.release_year < 2020`);
+    } else if (era === 'recent') {
+      whereClauses.push(`m.release_year >= 2020`);
+    } else if (era === '2010s') {
+      whereClauses.push(`m.release_year BETWEEN 2010 AND 2019`);
+    } else if (era === '2000s') {
+      whereClauses.push(`m.release_year BETWEEN 2000 AND 2009`);
+    } else if (era === '90s') {
+      whereClauses.push(`m.release_year BETWEEN 1990 AND 1999`);
+    } else if (era === 'vintage' || era === 'classic') {
+      whereClauses.push(`m.release_year < 1990`);
     }
 
     const whereSql = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
@@ -259,8 +273,105 @@ function createMovie(req, res) {
   }
 }
 
+// GET /api/movies/previous
+function getPreviousMovies(req, res) {
+  try {
+    const { search, genre, sort = 'highest_rated', era = 'all', page = 1, limit = 16 } = req.query;
+    const userId = req.user ? req.user.id : null;
+
+    let whereClauses = ['m.release_year < 2020'];
+    let params = [];
+
+    if (search && search.trim() !== '') {
+      const term = `%${search.trim()}%`;
+      whereClauses.push(`(m.title LIKE ? OR m.director LIKE ? OR m."cast" LIKE ? OR m.description LIKE ?)`);
+      params.push(term, term, term, term);
+    }
+
+    if (genre && genre.trim() !== '' && genre.toLowerCase() !== 'all') {
+      whereClauses.push(`m.genres LIKE ?`);
+      params.push(`%${genre.trim()}%`);
+    }
+
+    // Sub-era filtering
+    if (era === '2010s') {
+      whereClauses.push(`m.release_year BETWEEN 2010 AND 2019`);
+    } else if (era === '2000s') {
+      whereClauses.push(`m.release_year BETWEEN 2000 AND 2009`);
+    } else if (era === '90s') {
+      whereClauses.push(`m.release_year BETWEEN 1990 AND 1999`);
+    } else if (era === 'vintage' || era === 'classic') {
+      whereClauses.push(`m.release_year < 1990`);
+    }
+
+    const whereSql = `WHERE ${whereClauses.join(' AND ')}`;
+
+    let orderSql = 'ORDER BY avg_rating DESC, total_reviews DESC';
+    if (sort === 'oldest') {
+      orderSql = 'ORDER BY release_year ASC';
+    } else if (sort === 'newest') {
+      orderSql = 'ORDER BY release_year DESC';
+    } else if (sort === 'most_reviewed') {
+      orderSql = 'ORDER BY total_reviews DESC, avg_rating DESC';
+    } else if (sort === 'title_asc') {
+      orderSql = 'ORDER BY title ASC';
+    } else if (sort === 'highest_rated') {
+      orderSql = 'ORDER BY avg_rating DESC, total_reviews DESC';
+    }
+
+    const countRow = db.prepare(`SELECT COUNT(*) as total FROM movies m ${whereSql}`).get(...params);
+    const total = countRow ? countRow.total : 0;
+
+    const offset = (Math.max(1, parseInt(page)) - 1) * parseInt(limit);
+
+    const moviesQuery = `
+      SELECT 
+        m.*,
+        ${userId ? `(SELECT COUNT(*) FROM watchlist w WHERE w.movie_id = m.id AND w.user_id = ${userId}) AS is_in_watchlist` : '0 AS is_in_watchlist'}
+      FROM movies m
+      ${whereSql}
+      ${orderSql}
+      LIMIT ? OFFSET ?
+    `;
+
+    const movies = db.prepare(moviesQuery).all(...params, parseInt(limit), offset);
+
+    // Compute era counts
+    const eraStats = {
+      all: db.prepare(`SELECT COUNT(*) as c FROM movies WHERE release_year < 2020`).get().c,
+      '2010s': db.prepare(`SELECT COUNT(*) as c FROM movies WHERE release_year BETWEEN 2010 AND 2019`).get().c,
+      '2000s': db.prepare(`SELECT COUNT(*) as c FROM movies WHERE release_year BETWEEN 2000 AND 2009`).get().c,
+      '90s': db.prepare(`SELECT COUNT(*) as c FROM movies WHERE release_year BETWEEN 1990 AND 1999`).get().c,
+      vintage: db.prepare(`SELECT COUNT(*) as c FROM movies WHERE release_year < 1990`).get().c
+    };
+
+    const formatted = movies.map(m => ({
+      ...m,
+      is_in_watchlist: Boolean(m.is_in_watchlist),
+      genres: m.genres ? m.genres.split(',').map(g => g.trim()) : [],
+      cast: m.cast ? m.cast.split(',').map(c => c.trim()) : []
+    }));
+
+    return res.json({
+      success: true,
+      data: formatted,
+      eraStats,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        totalPages: Math.ceil(total / parseInt(limit))
+      }
+    });
+  } catch (error) {
+    console.error('getPreviousMovies error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to fetch previous movies.' });
+  }
+}
+
 module.exports = {
   getMovies,
+  getPreviousMovies,
   getMovieById,
   getFeaturedMovie,
   getGenres,

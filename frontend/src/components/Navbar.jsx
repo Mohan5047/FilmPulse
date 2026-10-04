@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Film, Search, Bookmark, User, PlusCircle, LogOut, Menu, X, Star } from 'lucide-react';
+import { Film, Search, Bookmark, User, PlusCircle, LogOut, Menu, X, Star, History } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar({ onOpenAddMovie }) {
@@ -58,6 +58,12 @@ export default function Navbar({ onOpenAddMovie }) {
                 className={`transition-colors hover:text-amber-400 ${isCurrent('/') ? 'text-amber-400' : 'text-slate-300'}`}
               >
                 Movies
+              </Link>
+              <Link 
+                to="/previous-movies" 
+                className={`transition-colors hover:text-amber-400 flex items-center gap-1.5 ${isCurrent('/previous-movies') ? 'text-amber-400' : 'text-slate-300'}`}
+              >
+                <History className="w-4 h-4 text-amber-400" /> Previous Movies
               </Link>
               <Link 
                 to="/?sort=highest_rated" 
@@ -187,6 +193,14 @@ export default function Navbar({ onOpenAddMovie }) {
                 className="px-3 py-2 rounded-lg text-slate-300 hover:bg-white/5 hover:text-white"
               >
                 Movies
+              </Link>
+              <Link
+                to="/previous-movies"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-lg text-slate-300 hover:bg-white/5 hover:text-white flex items-center justify-between"
+              >
+                <span>Previous Movies</span>
+                <History className="w-4 h-4 text-amber-400" />
               </Link>
               <Link
                 to="/?sort=highest_rated"

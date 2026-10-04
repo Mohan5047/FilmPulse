@@ -6,6 +6,7 @@ import AddMovieModal from './components/AddMovieModal';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import HomePage from './pages/HomePage';
+import PreviousMoviesPage from './pages/PreviousMoviesPage';
 import MovieDetailPage from './pages/MovieDetailPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -37,6 +38,7 @@ export default function App() {
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<HomePage onOpenAddMovie={handleOpenAddMovie} />} />
+          <Route path="/previous-movies" element={<PreviousMoviesPage />} />
           <Route path="/movie/:id" element={<MovieDetailPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
