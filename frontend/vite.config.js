@@ -1,18 +1,9 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-export default defineConfig({
-  base: './',
+export default defineConfig(({ command }) => ({
+  base: command === 'build' ? '/FilmPulse/' : '/',
   plugins: [react()],
-  build: {
-    rollupOptions: {
-      output: {
-        entryFileNames: 'bundle.js',
-        chunkFileNames: 'bundle.js',
-        assetFileNames: 'bundle.[ext]'
-      }
-    }
-  },
   server: {
     port: 5173,
     proxy: {
@@ -22,4 +13,4 @@ export default defineConfig({
       }
     }
   }
-});
+}));
